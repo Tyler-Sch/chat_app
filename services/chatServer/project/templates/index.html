@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Flask Test</title>
+    <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+            document.querySelector("#world").onclick = () => {
+                socket.emit('test',{'madeUpData':'gotIt'})
+                alert('data sent')
+                return false;
+            };
+            socket.on('test_passed', (event) => {
+                alert('data received');
+                console.log(event);
+                return false;
+            })
+        });
+    </script>
+</head>
+<body>
+    <h1 id="world">Hello World!</h1>
+
+</body>
+</html>
