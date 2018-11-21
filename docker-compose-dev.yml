@@ -11,6 +11,20 @@ services:
         ports:
             - 5001:5000
         environment:
-            - FLASK_APP=project/__init__.py
+            - FLASK_APP=project/app.py
             - FLASK_ENV=development
             - APP_SETTINGS=project.config.DevelopmentConfig
+            - DATABASE_URL=postgres://postgres:postgres@chat-db:5432/chat_dev
+            - DATABASE_TEST_URL=postgres://postgres:postgres@chat-db:5432/chat_test
+        depends_on:
+            - chat-db
+
+    chat-db:
+        build:
+            context: ./services/chatServer/project/db
+            dockerfile: Dockerfile
+        ports:
+            - 5435:5432
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres

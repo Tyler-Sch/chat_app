@@ -1,0 +1,3 @@
+CREATE DATABASE chat_prod;
+CREATE DATABASE chat_dev;
+CREATE DATABASE chat_test;
