@@ -11,8 +11,6 @@ COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-ENV FLASK_APP project/__init__.py
-
 COPY . /usr/src/app
 
 EXPOSE 5000

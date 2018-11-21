@@ -1,8 +1,11 @@
 from flask import Flask, render_template,jsonify
 from flask_socketio import SocketIO, join_room, emit
+import os
 
 
 app = Flask(__name__)
+app_settings = os.getenv('APP_SETTINGS')
+app.config.from_object(app_settings)
 socketio = SocketIO(app)
 
 messages = []
