@@ -8,8 +8,8 @@ services:
             dockerfile: Dockerfile-dev
         volumes:
             - './services/chatServer:/usr/src/app'
-        ports:
-            - 5001:5000
+        expose:
+            - '5000'
         environment:
             - FLASK_APP=project/app.py
             - FLASK_ENV=development
@@ -28,3 +28,13 @@ services:
         environment:
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=postgres
+
+    nginx:
+        build:
+            context: ./services/nginx
+            dockerfile: Dockerfile-prod
+        restart: always
+        ports:
+            - 80:80
+        depends_on:
+            - chatserver
