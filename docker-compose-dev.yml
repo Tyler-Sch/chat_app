@@ -6,6 +6,8 @@ services:
         build:
             context: ./services/chatServer
             dockerfile: Dockerfile-dev
+        security_opt:
+            - seccomp:unconfined
         volumes:
             - './services/chatServer:/usr/src/app'
         expose:
@@ -23,6 +25,8 @@ services:
         build:
             context: ./services/chatServer/project/db
             dockerfile: Dockerfile
+        security_opt:
+            - seccomp:unconfined
         ports:
             - 5435:5432
         environment:
