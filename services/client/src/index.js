@@ -7,28 +7,43 @@ import io from 'socket.io-client';
 class Message extends React.Component {
   constructor(props) {
     super(props);
+    this.handleclick = this.handleclick.bind(this)
   }
+  handleclick(e) {
+    this.props.sock.emit('sendMessage',{'message':'sending from react client'})
+    console.log(this.props)
+  }
+  componentDidMount() {
+    this.props.sock.emit('test',{'madeUpData':'gotIt'});
+    console.log('data sent');
+    this.props.sock.on('test_passed', (e) => {
+      console.log('data recieved');
+      console.log(e);
+    })
+  }
+
   render() {
-    return <p> {this.props.message}</p>
+    return <p onClick={this.handleclick}> {this.props.message}</p>
   }
 }
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {"messages":['test1','test2']}
+    this.state = {"messages":['test1','test2']};
+    this.socket = io("http://localhost");
 
   }
   componentDidMount() {
-    console.log('mounted');
-    var socket = io("http://localhost");
-    socket.emit('test',{'madeUpData':"gotIt"});
-    console.log('data sent');
-    socket.on('test_passed', (e) => {
-      console.log("data recieved");
-      console.log(e);
-    })
-    socket.on('gotMessage',(data) => {
+    //console.log('mounted');
+
+    //this.socket.emit('test',{'madeUpData':"gotIt"});
+    //console.log('data sent');
+    //this.socket.on('test_passed', (e) => {
+    //  console.log("data recieved");
+    //  console.log(e);
+
+    this.socket.on('gotMessage',(data) => {
       const message = data.newMessage;
       console.log(message);
       const new_arr = this.state.messages.concat(message);
@@ -45,7 +60,7 @@ class App extends React.Component {
           <div className="column is-one-third">
             <h1 className="title">hi!</h1>
             {this.state.messages.map((m) => {
-              return <Message message={m} />
+              return <Message message={m} sock={this.socket} />
             })}
           </div>
         </div>

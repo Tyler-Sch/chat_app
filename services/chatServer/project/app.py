@@ -12,7 +12,7 @@ db = SQLAlchemy(app)
 
 messages = []
 
-@app.route('/')
+@app.route('/chat')
 def index():
     return render_template('index.html',messages=messages)
 
