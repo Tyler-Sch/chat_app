@@ -36,14 +36,12 @@ services:
     client:
         build:
           context: ./services/client
-          dockerfile: Dockerfile-dev
+          dockerfile: Dockerfile-prod
         volumes:
           - './services/client:/usr/src/app'
           - '/usr/src/app/node_modules'
         ports:
-          - 3007:3000
-        environment:
-          - NODE_ENV=development
+          - '3000:80'
         depends_on:
           - chatserver
 

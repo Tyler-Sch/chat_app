@@ -15,11 +15,11 @@
             var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
             document.querySelector("#world").onclick = () => {
                 socket.emit('test',{'madeUpData':'gotIt'})
-                alert('data sent')
+                //alert('data sent')
                 return false;
             };
             socket.on('test_passed', (event) => {
-                alert('data received');
+                //alert('data received');
                 console.log(event);
                 return false;
             })

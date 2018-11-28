@@ -10,7 +10,6 @@ class Message extends React.Component {
     this.handleclick = this.handleclick.bind(this)
   }
   handleclick(e) {
-    this.props.sock.emit('sendMessage',{'message':'sending from react client'})
     console.log(this.props)
   }
   componentDidMount() {
@@ -27,21 +26,45 @@ class Message extends React.Component {
   }
 }
 
+class InputForm extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.props.addMessage}>
+        <div className='field'>
+          <input
+          name="messageInput"
+          placeholder="message?"
+          type="text"
+          className="input is-small"
+          value={this.props.currentVal}
+          onChange={this.props.handleChange}
+           />
+
+        </div>
+        <input type="submit" className="button is-primary is-small" value="submit" />
+      </form>
+    )
+  }
+
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {"messages":['test1','test2']};
-    this.socket = io("http://localhost");
+    this.state = {
+      "messages":['test1','test2'],
+      "message":""
+    };
 
+    this.socket = io("http://localhost");
+    this.addMessage = this.addMessage.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
   componentDidMount() {
-    //console.log('mounted');
-
-    //this.socket.emit('test',{'madeUpData':"gotIt"});
-    //console.log('data sent');
-    //this.socket.on('test_passed', (e) => {
-    //  console.log("data recieved");
-    //  console.log(e);
 
     this.socket.on('gotMessage',(data) => {
       const message = data.newMessage;
@@ -53,6 +76,16 @@ class App extends React.Component {
       });
     })
   }
+
+  addMessage(event) {
+    event.preventDefault();
+    this.socket.emit("sendMessage", {'message':this.state.message});
+    this.setState({"message":""});
+  }
+  handleInputChange(event) {
+    this.setState({'message':event.target.value});
+
+  }
   render() {
     return (
       <selection className='selection'>
@@ -63,6 +96,11 @@ class App extends React.Component {
               return <Message message={m} sock={this.socket} />
             })}
           </div>
+          <InputForm
+          addMessage={this.addMessage}
+          currentVal={this.state.message}
+          handleChange={this.handleInputChange}
+           />
         </div>
       </selection>
     )
