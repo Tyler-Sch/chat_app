@@ -1,20 +1,37 @@
-from flask import Flask, render_template,jsonify
+from flask import Flask, render_template,jsonify, request
 from flask_socketio import SocketIO, join_room, emit
 from flask_sqlalchemy import SQLAlchemy
 import os
+from project.models import *
 
 
 app = Flask(__name__)
 app_settings = os.getenv('APP_SETTINGS')
 app.config.from_object(app_settings)
 socketio = SocketIO(app)
-db = SQLAlchemy(app)
+db.init_app(app)
 
 messages = []
 
 @app.route('/chat')
 def index():
-    return render_template('index.html',messages=messages)
+    return render_template('index.html', messages=messages)
+
+@app.route('/chat/login',methods=['GET', 'POST'])
+def login():
+    if request.method == "POST":
+        post_data = request.get_json()
+        username = post_data.get('username')
+        db.session.add(User(username=username))
+        db.session.commit()
+        return jsonify({
+            'success':True
+        }), 201
+    else:
+        return jsonify({
+            'success':True
+        })
+
 
 @socketio.on("test")
 def on_test(data):
