@@ -47,9 +47,10 @@ def login():
 
 @socketio.on('connect')
 def testCook():
-    if session['testAreYouThere']:
-        emit('connect_response',{'cookiePresent':True})
-    else:
+    try:
+        if session['testAreYouThere']:
+            emit('connect_response',{'cookiePresent':True})
+    except KeyError:
         emit('connect_response',{'cookiePresent':False})
 
 @socketio.on("test")
