@@ -68,12 +68,14 @@ class App extends React.Component {
 
     this.socket.on('gotMessage',(data) => {
       const message = data.newMessage;
-      console.log(message);
       const new_arr = this.state.messages.concat(message);
-      console.log(new_arr[0])
       this.setState({
         'messages' : new_arr
       });
+    })
+
+    this.socket.on('connect_response', (data) => {
+      console.log(data);
     })
   }
 

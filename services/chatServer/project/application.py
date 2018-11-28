@@ -1,14 +1,20 @@
-from flask import Flask, render_template,jsonify, request
+from flask import Flask, render_template,jsonify, request, session, redirect
+from flask_session import Session
 from flask_socketio import SocketIO, join_room, emit
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_user, current_user, logout_user
 import os
 from project.models import *
 
 
 app = Flask(__name__)
+
 app_settings = os.getenv('APP_SETTINGS')
 app.config.from_object(app_settings)
+app.config['SESSION_TYPE'] = 'filesystem'
 socketio = SocketIO(app)
+Session(app)
+login_manager = LoginManager(app)
 db.init_app(app)
 
 messages = []
@@ -20,18 +26,31 @@ def index():
 @app.route('/chat/login',methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-        post_data = request.get_json()
-        username = post_data.get('username')
-        db.session.add(User(username=username))
-        db.session.commit()
-        return jsonify({
-            'success':True
-        }), 201
-    else:
-        return jsonify({
-            'success':True
-        })
+        if current_user.is_authenticated:
+            return redirect("http://localhost",code=302)
+        else:
+            username = request.form['username']
+            if not User.query.filter_by(username=username):
+                u = User(username=username)
+                db.session.add(u)
+                db.session.commit()
+            else:
+                u = User.query.filter_by(username=username)
+                login_user(u)
 
+
+
+        return redirect("http://localhost",code=302)
+
+    else:
+        return render_template('login.html')
+
+@socketio.on('connect')
+def testCook():
+    if session['testAreYouThere']:
+        emit('connect_response',{'cookiePresent':True})
+    else:
+        emit('connect_response',{'cookiePresent':False})
 
 @socketio.on("test")
 def on_test(data):
