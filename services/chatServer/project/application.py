@@ -81,6 +81,10 @@ def message_received(data):
     messages.append(data['message'])
     emit('gotMessage',{"newMessage":data['message']}, broadcast=True)
 
+@socketio.on("logoff")
+def logoff(data):
+    logout_user()
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)

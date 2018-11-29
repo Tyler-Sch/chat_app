@@ -52,6 +52,22 @@ class InputForm extends React.Component {
 
 }
 
+class Logout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleclick = this.handleclick.bind(this);
+  }
+  handleclick() {
+    this.props.sock.emit('logoff',{"logoff":true});
+    window.location = "chat/login"
+  }
+  render() {
+    return (
+      <button class="is-text" onClick={this.handleclick}> logout</button>
+    )
+  }
+}
+
 
 
 class App extends React.Component {
@@ -98,6 +114,7 @@ class App extends React.Component {
   render() {
     return (
       <selection className='selection'>
+        <Logout sock={this.socket} />
         <div className="container">
           <div className="column is-one-third">
             <h1 className="title">hi!</h1>
