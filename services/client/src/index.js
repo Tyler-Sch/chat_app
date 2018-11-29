@@ -7,22 +7,9 @@ import io from 'socket.io-client';
 class Message extends React.Component {
   constructor(props) {
     super(props);
-    this.handleclick = this.handleclick.bind(this)
   }
-  handleclick(e) {
-    console.log(this.props)
-  }
-  componentDidMount() {
-    this.props.sock.emit('test',{'madeUpData':'gotIt'});
-    console.log('data sent');
-    this.props.sock.on('test_passed', (e) => {
-      console.log('data recieved');
-      console.log(e);
-    })
-  }
-
   render() {
-    return <p onClick={this.handleclick}> {this.props.message}</p>
+    return <p>{this.props.message}</p>
   }
 }
 
@@ -30,7 +17,6 @@ class InputForm extends React.Component {
   constructor(props) {
     super(props);
   }
-
   render() {
     return (
       <form onSubmit={this.props.addMessage}>
@@ -59,7 +45,6 @@ class Logout extends React.Component {
   }
   handleclick() {
     this.props.sock.emit('logoff',{"logoff":true});
-    window.location = "chat/login"
   }
   render() {
     return (
@@ -67,8 +52,6 @@ class Logout extends React.Component {
     )
   }
 }
-
-
 
 class App extends React.Component {
   constructor(props) {
@@ -81,6 +64,7 @@ class App extends React.Component {
     this.socket = io("http://localhost");
     this.addMessage = this.addMessage.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+
   }
   componentDidMount() {
 
@@ -91,15 +75,19 @@ class App extends React.Component {
         'messages' : new_arr
       });
     })
-
-    this.socket.on('connect_response', (data) => {
-      if (data.authenticated == false) {
+    this.socket.on('logOffProcessed', (data) => {
         window.location = 'chat/login';
+    })
+    this.socket.on('connect_response', (data) => {
+        console.log(data);
+        if (data.authenticated == false) {
+            window.location = 'chat/login';
       }
       this.setState({
         'messages':data.messages
       })
     })
+
   }
 
   addMessage(event) {
@@ -119,7 +107,7 @@ class App extends React.Component {
           <div className="column is-one-third">
             <h1 className="title">hi!</h1>
             {this.state.messages.map((m) => {
-              return <Message message={m} sock={this.socket} />
+              return <Message message={m} />
             })}
           </div>
           <InputForm

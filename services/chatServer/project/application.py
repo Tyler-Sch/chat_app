@@ -13,7 +13,7 @@ app = Flask(__name__)
 app_settings = os.getenv('APP_SETTINGS')
 app.config.from_object(app_settings)
 app.config['SESSION_TYPE'] = 'filesystem'
-socketio = SocketIO(app)
+socketio = SocketIO(app, manage_session=False)
 Session(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -28,7 +28,8 @@ def index():
 @app.route('/chat/login',methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-        if current_user.is_authenticated:
+
+        if session.get('loggedOn'):
             return redirect(request.host_url,code=302)
         else:
             username = request.form['username']
@@ -38,7 +39,7 @@ def login():
             else:
                 u = User.query.filter_by(username=username).first()
                 if u.password == password:
-                    login_user(u)
+                    session['loggedOn'] = True
                     return redirect(request.host_url,code=302)
                 else:
                     return render_template('login.html',passwordError=True)
@@ -58,7 +59,7 @@ def create_new_user():
             u = User(username=username,password=password)
             db.session.add(u)
             db.session.commit()
-            login_user(u)
+            session['loggedOn'] = True
             return redirect(request.host_url, code=302)
         else:
             return render_template("newUser.html",usernameTaken=True)
@@ -67,8 +68,9 @@ def create_new_user():
 @socketio.on('connect')
 def testCook():
     emit('connect_response',{
-    'authenticated':current_user.is_authenticated,
-    'messages':messages
+    'authenticated':session['loggedOn'],
+    'messages':messages,
+    'username':current_user.username,
     })
 
 @socketio.on("test")
@@ -83,7 +85,9 @@ def message_received(data):
 
 @socketio.on("logoff")
 def logoff(data):
-    logout_user()
+    session['loggedOn'] = False
+    emit('logOffProcessed',{"logoffSessiion":session['loggedOn']})
+
 
 @login_manager.user_loader
 def load_user(user_id):
