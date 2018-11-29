@@ -52,11 +52,13 @@ class InputForm extends React.Component {
 
 }
 
+
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      "messages":['test1','test2'],
+      "messages":[],
       "message":""
     };
 
@@ -75,7 +77,12 @@ class App extends React.Component {
     })
 
     this.socket.on('connect_response', (data) => {
-      console.log(data);
+      if (data.authenticated == false) {
+        window.location = 'chat/login';
+      }
+      this.setState({
+        'messages':data.messages
+      })
     })
   }
 

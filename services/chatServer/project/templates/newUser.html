@@ -18,45 +18,31 @@
         <div class="hero-body">
             <div class="container has-text-centered">
                 <div class="column is-4 is-offset-4">
-                    <h3 class="title has-text-grey">Login</h3>
-                    <p class="subtitle has-text-grey">Please login to proceed.</p>
+                    <h3 class="title has-text-grey">Create New Account</h3>
+                    <p class="subtitle has-text-grey">Please create to proceed.</p>
                     <div class="box">
                         <figure class="avatar">
-                            <img src="http://placekitten.com/128/128">
+                            <img src="http://placekitten.com/145/145">
                         </figure>
-                        <form action="/chat/login" method="POST">
+                        <form action="{{ url_for('create_new_user') }}" method="POST">
                             <div class="field">
-                                {% if userNameError %}
                                 <div class="control">
-                                    <input name=username class="input is-large is-danger" type="text" placeholder="User Name" autofocus="">
-                                </div>
-                                <p class="help is-danger">User not found</p>
-                                {% else %}
-                                <div class="control">
+                                  {% if usernameTaken %}
+                                    <input name=username class="input is-large has-background-warning" type="text" placeholder="User Name Taken" autofocus="">
+                                    {% else %}
                                     <input name=username class="input is-large" type="text" placeholder="User Name" autofocus="">
+                                    {% endif %}
                                 </div>
-                                {% endif %}
                             </div>
+
                             <div class="field">
-                                {% if passwordError %}
-                                <div class="control">
-                                    <input class="input is-large is-danger" name=password type="password" placeholder="Your Password">
-                                    <p class="help is-danger">Incorrect password</p>
-                                </div>
-                                {% else %}
                                 <div class="control">
                                     <input class="input is-large" name=password type="password" placeholder="Your Password">
                                 </div>
-                                {% endif %}
                             </div>
-                            <button class="button is-block is-info is-large is-fullwidth">Login</button>
+                            <button class="button is-block is-info is-large is-fullwidth">Create</button>
                         </form>
                     </div>
-                    <p class="has-text-grey">
-                        <a href="{{ url_for('create_new_user') }}">Sign Up</a> &nbsp;·&nbsp;
-
-                        <a href="../">Need Help?</a>
-                    </p>
                 </div>
             </div>
         </div>
