@@ -2,7 +2,6 @@ import unittest
 from project.tests.base import BaseTestCase
 import json
 from project.models import *
-from project.application import app
 
 
 class TestChatService(BaseTestCase):
