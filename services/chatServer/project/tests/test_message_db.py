@@ -59,14 +59,17 @@ class TestMessageDatabase(BaseTestCase):
         self.assertEqual(len(message_group.messages), 1)
         self.assertIn("hi there", message_group.messages[0].message)
 
-
-
-
-
-
-
-
-
+    def test_multple_users_in_groups(self):
+        u = self.add_user("potato","chip")
+        message_group = self.add_message_group("bunnies", u)
+        members = [("chocolate", "chip"), ("poker","chip"), ("pumpkin", "pie")]
+        for member in members:
+            new_member = self.add_user(member[0],member[1])
+            message_group.members.append(new_member)
+        self.assertEqual((len(members) + 1), len(message_group.members))
+        member_names = [member.username for member in message_group.members]
+        for member in members:
+            self.assertIn(member[0], member_names)
 
 
 if __name__ == "__main__":
