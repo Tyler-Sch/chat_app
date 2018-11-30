@@ -28,16 +28,17 @@
                             <div class="field">
                                 <div class="control">
                                   {% if usernameTaken %}
-                                    <input name=username class="input is-large has-background-warning" type="text" placeholder="User Name Taken" autofocus="">
+                                    <input name="username" class="input is-large has-background-warning" type="text" placeholder="User Name Taken" autofocus="">
+                                    <p class="help is-danger">Name already taken</p>
                                     {% else %}
-                                    <input name=username class="input is-large" type="text" placeholder="User Name" autofocus="">
+                                    <input name="username" class="input is-large" type="text" placeholder="User Name" autofocus="">
                                     {% endif %}
                                 </div>
                             </div>
 
                             <div class="field">
                                 <div class="control">
-                                    <input class="input is-large" name=password type="password" placeholder="Your Password">
+                                    <input class="input is-large" name="password" type="password" placeholder="Your Password">
                                 </div>
                             </div>
                             <button class="button is-block is-info is-large is-fullwidth">Create</button>

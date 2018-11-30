@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - Free Bulma template</title>
+    <title>Login</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
     <!-- Bulma Version 0.7.2-->
@@ -40,12 +40,12 @@
                             <div class="field">
                                 {% if passwordError %}
                                 <div class="control">
-                                    <input class="input is-large is-danger" name=password type="password" placeholder="Your Password">
+                                    <input class="input is-large is-danger" name="password" type="password" placeholder="Your Password">
                                     <p class="help is-danger">Incorrect password</p>
                                 </div>
                                 {% else %}
                                 <div class="control">
-                                    <input class="input is-large" name=password type="password" placeholder="Your Password">
+                                    <input class="input is-large" name="password" type="password" placeholder="Your Password">
                                 </div>
                                 {% endif %}
                             </div>
@@ -53,9 +53,7 @@
                         </form>
                     </div>
                     <p class="has-text-grey">
-                        <a href="{{ url_for('create_new_user') }}">Sign Up</a> &nbsp;·&nbsp;
-
-                        <a href="../">Need Help?</a>
+                        <a href="{{ url_for('create_new_user') }}">Sign Up</a>
                     </p>
                 </div>
             </div>
