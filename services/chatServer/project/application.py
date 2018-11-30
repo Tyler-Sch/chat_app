@@ -25,6 +25,10 @@ messages = []
 def index():
     return render_template('index.html', messages=messages)
 
+@app.route('/chat/newGroup/<string:newGroupName>')
+def create_new_group(newGroupName):
+    pass
+
 @app.route('/chat/login',methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
@@ -34,7 +38,7 @@ def login():
             return render_template('login.html',userNameError=True)
         else:
             u = User.query.filter_by(username=username).first()
-            if u.password == password:
+            if u.check_password(password):
                 login_user(u)
                 session['loggedOn'] = True
                 return redirect(request.host_url,code=302)
