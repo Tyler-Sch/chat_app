@@ -9,8 +9,13 @@ class Message extends React.Component {
     super(props);
   }
   render() {
-    return <p>{this.props.message}</p>
-  }
+    return (
+        <div>
+
+            <p>{this.props.message.user}: {this.props.message.text}</p>
+        </div>
+    )
+    }
 }
 
 class InputForm extends React.Component {
@@ -69,10 +74,11 @@ class App extends React.Component {
   componentDidMount() {
 
     this.socket.on('gotMessage',(data) => {
-      const message = data.newMessage;
-      const new_arr = this.state.messages.concat(message);
+      const message = data.newMessage.text;
+      const user = data.newMessage.user
+      const new_arr = this.state.messages.concat(data.newMessage);
       this.setState({
-        'messages' : new_arr
+        'messages' : new_arr,
       });
     })
     this.socket.on('logOffProcessed', (data) => {
@@ -84,7 +90,8 @@ class App extends React.Component {
             window.location = 'chat/login';
       }
       this.setState({
-        'messages':data.messages
+        'messages':data.messages,
+        'username':data.username
       })
     })
 
@@ -92,7 +99,7 @@ class App extends React.Component {
 
   addMessage(event) {
     event.preventDefault();
-    this.socket.emit("sendMessage", {'message':this.state.message});
+    this.socket.emit("sendMessage", {'message':{'user':this.state.username,'text':this.state.message}});
     this.setState({"message":""});
   }
   handleInputChange(event) {
@@ -105,7 +112,7 @@ class App extends React.Component {
         <Logout sock={this.socket} />
         <div className="container">
           <div className="column is-one-third">
-            <h1 className="title">hi!</h1>
+            <h1 className="title">hi {this.state.username}!</h1>
             {this.state.messages.map((m) => {
               return <Message message={m} />
             })}

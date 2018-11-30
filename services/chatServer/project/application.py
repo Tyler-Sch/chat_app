@@ -28,21 +28,18 @@ def index():
 @app.route('/chat/login',methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-
-        if session.get('loggedOn'):
-            return redirect(request.host_url,code=302)
+        username = request.form['username']
+        password = request.form['password']
+        if not User.query.filter_by(username=username).all():
+            return render_template('login.html',userNameError=True)
         else:
-            username = request.form['username']
-            password = request.form['password']
-            if not User.query.filter_by(username=username).all():
-                return render_template('login.html',userNameError=True)
+            u = User.query.filter_by(username=username).first()
+            if u.password == password:
+                login_user(u)
+                session['loggedOn'] = True
+                return redirect(request.host_url,code=302)
             else:
-                u = User.query.filter_by(username=username).first()
-                if u.password == password:
-                    session['loggedOn'] = True
-                    return redirect(request.host_url,code=302)
-                else:
-                    return render_template('login.html',passwordError=True)
+                return render_template('login.html',passwordError=True)
 
     else:
         return render_template('login.html')
@@ -60,6 +57,7 @@ def create_new_user():
             db.session.add(u)
             db.session.commit()
             session['loggedOn'] = True
+            login_user(u)
             return redirect(request.host_url, code=302)
         else:
             return render_template("newUser.html",usernameTaken=True)
@@ -73,11 +71,6 @@ def testCook():
     'username':current_user.username,
     })
 
-@socketio.on("test")
-def on_test(data):
-    print(data)
-    emit('test_passed',{"didIDoIt":"yesYouDid"},broadcast=True)
-
 @socketio.on('sendMessage')
 def message_received(data):
     messages.append(data['message'])
@@ -86,7 +79,8 @@ def message_received(data):
 @socketio.on("logoff")
 def logoff(data):
     session['loggedOn'] = False
-    emit('logOffProcessed',{"logoffSessiion":session['loggedOn']})
+    logout_user()
+    emit('logOffProcessed',{"logoffSession":session['loggedOn']})
 
 
 @login_manager.user_loader
