@@ -1,4 +1,5 @@
 import unittest
+import flask
 from project.tests.base import BaseTestCase
 import json
 from project.models import *
@@ -14,6 +15,7 @@ class TestChatService(BaseTestCase):
         u = User(username=username,password=password)
         db.session.add(u)
         db.session.commit()
+        return u
 
     def test_create_user(self):
         self.add_user("potato", "chip")
@@ -131,6 +133,25 @@ class TestChatService(BaseTestCase):
             response_text = response.data.decode()
             self.assertEqual(response.status_code, 200)
             self.assertIn('Name already taken', response_text)
+
+    def test_create_new_message_group(self):
+        with self.client:
+            self.assertEqual(flask.session.get('loggedOn'), None)
+            # sess['requested_group'] = 'nothing'
+            # response = self.client.get("/chat/group/bunnies")
+
+            # self.assertEqual(response.status_code, 302)
+            # self.assertNotEqual("nothing", sess.get("requested_group"))
+            response = self.client.get('/chat/group/bunnies')
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(flask.session['requested_group'], 'bunnies')
+            self.assertIn('/chat/login', response.data.decode())
+            message_group = Message_group.query.all()
+            self.assertEqual(len(message_group), 0)
+
+
+    def test_create_new_message_group_with_logged_in_user(self):
+        pass
 
 
 if __name__ == "__main__":

@@ -25,9 +25,26 @@ messages = []
 def index():
     return render_template('index.html', messages=messages)
 
-@app.route('/chat/newGroup/<string:newGroupName>')
-def create_new_group(newGroupName):
-    pass
+@app.route('/chat/group/<string:groupName>')
+def join_group(groupName):
+    session['requested_group'] = groupName
+    if current_user.is_authenticated:
+        # check if group exists
+        if Message_group.query.filter_by(message_group=groupName):
+            return redirect(request.host_url, code=302)
+        else:
+            # create group
+            new_group = Message_group(
+                group_name=groupName,
+                creator=current_user
+            )
+            db.session.add(new_group)
+            db.session.commit()
+            return redirect(request.host_url, code=302)
+    else:
+        return redirect(url_for('login'), code=302)
+
+
 
 @app.route('/chat/login',methods=['GET', 'POST'])
 def login():
@@ -41,7 +58,7 @@ def login():
             if u.check_password(password):
                 login_user(u)
                 session['loggedOn'] = True
-                return redirect(request.host_url,code=302)
+                return redirect(request.host_url, code=302)
             else:
                 return render_template('login.html',passwordError=True)
 
