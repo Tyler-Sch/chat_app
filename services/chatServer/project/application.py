@@ -30,7 +30,10 @@ def join_group(groupName):
     session['requested_group'] = groupName
     if current_user.is_authenticated:
         # check if group exists
-        if Message_group.query.filter_by(message_group=groupName):
+        if Message_group.query.filter_by(group_name=groupName).all():
+            active_group = Message_group.query.filter_by(group_name=groupName).first()
+            active_group.members.append(current_user)
+            db.session.commit()
             return redirect(request.host_url, code=302)
         else:
             # create group
@@ -58,7 +61,15 @@ def login():
             if u.check_password(password):
                 login_user(u)
                 session['loggedOn'] = True
-                return redirect(request.host_url, code=302)
+                if session.get('requested_group'):
+                    return redirect(
+                        url_for(
+                            'join_group',
+                            groupName=session['requested_group']
+                        ), code=302
+                    )
+                else:
+                    return redirect(request.host_url, code=302)
             else:
                 return render_template('login.html',passwordError=True)
 

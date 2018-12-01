@@ -135,13 +135,10 @@ class TestChatService(BaseTestCase):
             self.assertIn('Name already taken', response_text)
 
     def test_create_new_message_group(self):
+
+        u = self.add_user("potato","chip")
         with self.client:
             self.assertEqual(flask.session.get('loggedOn'), None)
-            # sess['requested_group'] = 'nothing'
-            # response = self.client.get("/chat/group/bunnies")
-
-            # self.assertEqual(response.status_code, 302)
-            # self.assertNotEqual("nothing", sess.get("requested_group"))
             response = self.client.get('/chat/group/bunnies')
             self.assertEqual(response.status_code, 302)
             self.assertEqual(flask.session['requested_group'], 'bunnies')
@@ -149,9 +146,78 @@ class TestChatService(BaseTestCase):
             message_group = Message_group.query.all()
             self.assertEqual(len(message_group), 0)
 
+            response = self.client.post(
+                '/chat/login',
+                data=dict(
+                    username="potato",
+                    password="chip"
+                ),
+                follow_redirects=False
+            )
+            response = self.client.get('/chat/group/bunnies')
+            message_group = Message_group.query.all()[0]
+            self.assertTrue(flask.session['loggedOn'])
+            self.assertEqual(flask.session['requested_group'], "bunnies")
+            self.assertNotEqual(response.status_code, 404)
+            self.assertEqual(len(Message_group.query.all()), 1)
+            self.assertIn("potato", message_group.members[0].username)
+            self.assertEqual(u.id,message_group.creator)
 
-    def test_create_new_message_group_with_logged_in_user(self):
-        pass
+    def add_user_group_through_server(self, username, password, groupName, create_user=True):
+        if create_user == True:
+            u = self.add_user(username, password)
+        with self.client:
+            response = self.client.get(f'/chat/group/{groupName}')
+            message_group = Message_group.query.all()
+            response = self.client.post(
+                '/chat/login',
+                data=dict(
+                    username=username,
+                    password=password
+                ),
+                follow_redirects=False
+            )
+            response = self.client.get(f'/chat/group/{groupName}')
+
+    def test_multiple_member_join_group(self):
+        self.add_user_group_through_server('potato', 'chip', 'bunnies')
+        self.assertEqual(flask.session.get('loggedOn'), None)
+        self.assertEqual(len(Message_group.query.all()), 1)
+        self.add_user_group_through_server('potato2', 'chipz', 'bunnies')
+        self.assertEqual(len(Message_group.query.first().members), 2)
+        list_of_names = [
+            ('chocolate', 'chip'),
+            ('poker', 'chip'),
+            ('shepards','pie'),
+            ('tofu', 'fakemeat')
+        ]
+        for pair in list_of_names:
+            self.add_user_group_through_server(pair[0], pair[1], 'bunnies')
+
+        self.assertEqual(
+            len(Message_group.query.filter_by(
+                group_name='bunnies'
+                ).first().members
+            ),
+            len(list_of_names) + 2
+        )
+
+    def test_user_can_create_and_join_multiple_groups(self):
+        groups_to_join = ["chessclub", "bunny", "megadeathClub"]
+        self.add_user('potato', 'chip')
+        for group in groups_to_join:
+            self.add_user_group_through_server(
+                "potato",
+                "chip",
+                group,
+                create_user=False
+            )
+
+        self.assertEqual(
+            len(User.query.filter_by(username="potato").first().groups),
+            len(groups_to_join)
+        )
+
 
 
 if __name__ == "__main__":
