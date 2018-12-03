@@ -32,9 +32,12 @@ def join_group(groupName):
         # check if group exists
         if Message_group.query.filter_by(group_name=groupName).all():
             active_group = Message_group.query.filter_by(group_name=groupName).first()
-            active_group.members.append(current_user)
-            db.session.commit()
-            return redirect(request.host_url, code=302)
+            if current_user in active_group.members:
+                return redirect(request.host_url, code=302)
+            else:
+                active_group.members.append(current_user)
+                db.session.commit()
+                return redirect(request.host_url, code=302)
         else:
             # create group
             new_group = Message_group(
@@ -76,6 +79,12 @@ def login():
     else:
         return render_template('login.html')
 
+@app.route('/chat/logout', methods=["GET"])
+def test_logout():
+    session["loggedOn"] = False
+    logout_user()
+    return "logged out"
+
 @app.route('/chat/newAccount', methods=['GET','POST'])
 def create_new_user():
     if request.method == "GET":
@@ -98,7 +107,7 @@ def create_new_user():
 @socketio.on('connect')
 def testCook():
     emit('connect_response',{
-    'authenticated':session['loggedOn'],
+    'authenticated':current_user.is_authenticated,
     'messages':messages,
     'username':current_user.username,
     })
@@ -112,7 +121,7 @@ def message_received(data):
 def logoff(data):
     session['loggedOn'] = False
     logout_user()
-    emit('logOffProcessed',{"logoffSession":session['loggedOn']})
+    emit('logOffProcessed',{"logoffSession":True})
 
 
 @login_manager.user_loader

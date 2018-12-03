@@ -168,7 +168,7 @@ class TestChatService(BaseTestCase):
             u = self.add_user(username, password)
         with self.client:
             response = self.client.get(f'/chat/group/{groupName}')
-            message_group = Message_group.query.all()
+            # message_group = Message_group.query.all()
             response = self.client.post(
                 '/chat/login',
                 data=dict(
@@ -218,7 +218,43 @@ class TestChatService(BaseTestCase):
             len(groups_to_join)
         )
 
+    def test_user_creates_room_logsout_and_comes_back(self):
+        u = self.add_user("potato", "chip")
+        # Login, create, logout
+        with self.client:
+            response = self.client.get('/chat/group/bunnies')
+            # message_group = Message_group.query.all()
+            response = self.client.post(
+                '/chat/login',
+                data=dict(
+                    username="potato",
+                    password="chip"
+                ),
+                follow_redirects=False
+            )
+            response = self.client.get('/chat/group/bunnies')
+            self.assertEqual(flask.session["requested_group"], "bunnies")
 
+            response = self.client.get('/chat/logout')
+        # Login, go to group
+        with self.client:
+            self.assertEqual(flask.session.get("requested_group"), None)
+            self.assertIn("bunnies", Message_group.query.first().group_name)
+            response = self.client.post(
+                '/chat/login',
+                data=dict(
+                    username="potato",
+                    password="chip"
+                ),
+                follow_redirects=False
+            )
+            response = self.client.get("/chat/group/bunnies")
+            self.assertEqual(
+                len(Message_group.query.filter_by(
+                    group_name="bunnies"
+                ).first().members),
+                1
+            )
 
 if __name__ == "__main__":
     unittest.main()
