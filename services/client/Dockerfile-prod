@@ -17,6 +17,7 @@ ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
 
 COPY . /usr/src/app
+RUN npm run css-build
 RUN npm run build
 
 #########

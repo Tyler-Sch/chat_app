@@ -70,6 +70,9 @@ class TestMessageDatabase(BaseTestCase):
         member_names = [member.username for member in message_group.members]
         for member in members:
             self.assertIn(member[0], member_names)
+        for member in members:
+            m = User.query.filter_by(username=member[0]).first()
+            self.assertTrue(message_group in m.groups)
 
 
 if __name__ == "__main__":
