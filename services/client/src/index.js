@@ -17,12 +17,52 @@ const init_rooms = [
   {
     "room":"testRoom",
     "has_checked":false
-  }
+    },
+    {
+      "room":"bunnies",
+      "has_checked":false,
+    },
+    {
+      "room":"chessClub",
+      "has_checked":true
+    },
+    {
+      "room":"testRoom",
+      "has_checked":false
+    },
+    {
+      "room":"bunnies",
+      "has_checked":false,
+    },
+    {
+      "room":"chessClub",
+      "has_checked":true
+    },
+    {
+      "room":"testRoom",
+      "has_checked":false
+    }
 ];
 
 const init_people = [
   "potato",
-  "chip"
+  "chip",
+  "potato",
+  "chip",
+  "potato",
+  "chip",
+  "potato",
+  "chip",
+  "potato",
+  "chip",
+  "potato",
+  "chip",
+  "potato",
+  "chip",
+  "potato",
+  "chip",
+  "potato",
+  "chip",
 ]
 
 
@@ -65,10 +105,10 @@ class MessageBoxContainer extends React.Component {
   render() {
     return (
       <div className="columns is-mobile" id="column-box">
-        <div className="column is-3" id="left-column">
+        <div className="column is-4" id="left-column">
           <LeftColumn />
         </div>
-        <div className="column is-9" id="right-column">
+        <div className="column is-8" id="right-column">
           <RightColumn />
         </div>
       </div>
