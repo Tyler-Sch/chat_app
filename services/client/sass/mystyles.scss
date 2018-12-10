@@ -91,51 +91,92 @@ $pre-background: $background;
 
 
 @import "../node_modules/bulma/bulma.sass";
+* {
+  box-sizing: border-box;
+}
 
 // html {
 //   height: 100%;
 //   width: 100%;
 // }
 
-
-html, body {
+#main {
   height: 100vh;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
 
-#left-column {
-  border: 1px white solid;
-  min-width: 10em;
-}
+  #main-head {
+    height:7%;
+  }
 
-#column-box {
-  height: 80vh;
-}
+  #main-body {
+    height: 93%;
 
-#right-column {
-  border: 1px white solid;
-}
+    #column-box {
+      height: 100%;
+      #left-column {
+        height: 100%;
 
-.main {
-  // height: 100%;
-}
+        #leftcolumn {
+          height:100%;
 
-#roomlist {
-  // height: 50%;
-  overflow-wrap:break-word;
-  // min-height: 5em;
-}
-#roomlist-body {
-  overflow-y: scroll;
-  // height: 80%;
-}
-#peoplelist {
-  // height:50%;
-}
+          #roomlist {
+            height: 50%;
 
-#people-list-body {
-  overflow-y: scroll;
-  // height: 50%;
+            #roomlist-body {
+              overflow: hidden;
+              height: 85%;
+              padding-left: 1em;
+
+              &:hover, &:focus {
+                overflow-y: scroll
+              }
+            }
+
+          }
+
+          #peoplelist {
+            height: 50%;
+
+            #people-list-body {
+                overflow: hidden;
+                height: 85%;
+                padding-left: 1em;
+
+                &:hover, &:focus {
+                  overflow-y: scroll
+                }
+            }
+
+          }
+
+        }
+
+      }
+      #right-column {
+        height: 100%;
+        #message-column {
+          height: 100%;
+
+          #message-box-input {
+            padding-right: .5em;
+            padding-top: .5em;
+            height:5%;
+          }
+
+          #message-box-head {
+            height:5%;
+          }
+
+          .message-box {
+            overflow-y: scroll;
+            height: 90%;
+
+            #message-tile {
+              padding-right: 1em;
+            }
+          }
+        }
+      }
+    }
+  }
+
 }

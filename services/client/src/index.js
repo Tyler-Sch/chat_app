@@ -4,6 +4,9 @@ import io from 'socket.io-client';
 import './mystyles.css';
 import NavBar from './components/nav.js';
 import RoomList from './components/messagecontainer/roomlist.js';
+import PeopleList from "./components/messagecontainer/peoplelist.js";
+import ActiveGroupBox from "./components/messagecontainer/messageBox.js";
+import { MessageInput } from "./components/messagecontainer/messageBox.js";
 
 const init_rooms = [
   {
@@ -65,38 +68,97 @@ const init_people = [
   "chip",
 ]
 
+const sampleMessages = [
+  {"message_group_name":"bunnies",
+   "messages": [
+    {
+      "username":"potato",
+      "time":"3:47",
+      "message":"hello there",
+    },
+    {
+      "username":"chipz",
+      "time":"3:48",
+      "message":"I see you!"
+    },
+     {
+       "username":"potato",
+       "time":"3:50",
+       "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
+     },
+     {
+       "username":"potato",
+       "time":"3:47",
+       "message":"hello there",
+     },
+     {
+       "username":"chipz",
+       "time":"3:48",
+       "message":"I see you!"
+     },
+      {
+        "username":"potato",
+        "time":"3:50",
+        "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
+      },
+      {
+        "username":"potato",
+        "time":"3:47",
+        "message":"hello there",
+      },
+      {
+        "username":"chipz",
+        "time":"3:48",
+        "message":"I see you!"
+      },
+       {
+         "username":"potato",
+         "time":"3:50",
+         "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
+       },
+       {
+         "username":"potato",
+         "time":"3:47",
+         "message":"hello there",
+       },
+       {
+         "username":"chipz",
+         "time":"3:48",
+         "message":"I see you!"
+       },
+        {
+          "username":"potato",
+          "time":"3:50",
+          "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
+        }
 
-class PeopleList extends React.Component {
+   ]
+  }
+]
+
+
+
+
+class MessageColumn extends React.Component {
   constructor(props) {
     super(props);
   }
   render() {
-    const peopleList = this.props.people.map((person) => {
-      return (<Person personName={person} />)
-        });
     return (
-      <div id="peoplelist">
-        <div id="people-list-head">
-          <p class="has-text-white-ter subtile is-size-6 has-text-centered ">People</p>
+        <div className="column message-box is-paddingless" id="message-column">
+          <div id="message-box-head">
+            <p className="has-text-white-ter has-text-centered is-size-5">Message Group</p>
+          </div>
+
+          <ActiveGroupBox messageList={sampleMessages[0].messages} />
+
+          <MessageInput />
         </div>
-        <div id="people-list-body">
-           {peopleList}
-        </div>
-      </div>
     )
   }
 }
 
-class Person extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <p class="has-text-grey-light is-size-6">{this.props.personName}</p>
-    )
-  }
-}
+
 
 class MessageBoxContainer extends React.Component {
   constructor(props) {
@@ -119,7 +181,7 @@ class MessageBoxContainer extends React.Component {
 class RightColumn extends React.Component {
   render() {
     return (
-      <div>Second Column</div>
+      <MessageColumn />
     )
   }
 }
@@ -130,7 +192,7 @@ class LeftColumn extends React.Component {
   }
   render() {
     return (
-      <div className="main">
+      <div id="leftcolumn">
         <RoomList rooms={init_rooms} />
         <PeopleList people={init_people} />
       </div>
@@ -147,12 +209,12 @@ class App extends React.Component {
   }
   render() {
     return (
-      <div className="main">
-        <div>
+      <div id="main">
+        <div id="main-head">
           <p className="title has-text-white has-text-centered">Messages</p>
-          <NavBar />
+
         </div>
-        <div className="main">
+        <div id="main-body" >
           <MessageBoxContainer />
         </div>
       </div>

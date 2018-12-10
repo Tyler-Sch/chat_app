@@ -6746,27 +6746,49 @@ label.panel-block {
   background-color: #fafafa;
   padding: 3rem 1.5rem 6rem; }
 
-html, body {
-  height: 100vh;
-  overflow: hidden;
-  margin: 0;
-  padding: 0; }
+* {
+  box-sizing: border-box; }
 
-#left-column {
-  border: 1px white solid;
-  min-width: 10em; }
-
-#column-box {
-  height: 80vh; }
-
-#right-column {
-  border: 1px white solid; }
-
-#roomlist {
-  overflow-wrap: break-word; }
-
-#roomlist-body {
-  overflow-y: scroll; }
-
-#people-list-body {
-  overflow-y: scroll; }
+#main {
+  height: 100vh; }
+  #main #main-head {
+    height: 7%; }
+  #main #main-body {
+    height: 93%; }
+    #main #main-body #column-box {
+      height: 100%; }
+      #main #main-body #column-box #left-column {
+        height: 100%; }
+        #main #main-body #column-box #left-column #leftcolumn {
+          height: 100%; }
+          #main #main-body #column-box #left-column #leftcolumn #roomlist {
+            height: 50%; }
+            #main #main-body #column-box #left-column #leftcolumn #roomlist #roomlist-body {
+              overflow: hidden;
+              height: 85%;
+              padding-left: 1em; }
+              #main #main-body #column-box #left-column #leftcolumn #roomlist #roomlist-body:hover, #main #main-body #column-box #left-column #leftcolumn #roomlist #roomlist-body:focus {
+                overflow-y: scroll; }
+          #main #main-body #column-box #left-column #leftcolumn #peoplelist {
+            height: 50%; }
+            #main #main-body #column-box #left-column #leftcolumn #peoplelist #people-list-body {
+              overflow: hidden;
+              height: 85%;
+              padding-left: 1em; }
+              #main #main-body #column-box #left-column #leftcolumn #peoplelist #people-list-body:hover, #main #main-body #column-box #left-column #leftcolumn #peoplelist #people-list-body:focus {
+                overflow-y: scroll; }
+      #main #main-body #column-box #right-column {
+        height: 100%; }
+        #main #main-body #column-box #right-column #message-column {
+          height: 100%; }
+          #main #main-body #column-box #right-column #message-column #message-box-input {
+            padding-right: .5em;
+            padding-top: .5em;
+            height: 5%; }
+          #main #main-body #column-box #right-column #message-column #message-box-head {
+            height: 5%; }
+          #main #main-body #column-box #right-column #message-column .message-box {
+            overflow-y: scroll;
+            height: 90%; }
+            #main #main-body #column-box #right-column #message-column .message-box #message-tile {
+              padding-right: 1em; }
