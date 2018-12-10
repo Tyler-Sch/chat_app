@@ -53,7 +53,7 @@ class Logout extends React.Component {
   }
   render() {
     return (
-      <button class="is-text" onClick={this.handleclick}> logout</button>
+      <button className="is-text" onClick={this.handleclick}> logout</button>
     )
   }
 }

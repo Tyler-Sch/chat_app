@@ -80,10 +80,10 @@ def login():
         return render_template('login.html')
 
 @app.route('/chat/logout', methods=["GET"])
-def test_logout():
+def logout():
     session["loggedOn"] = False
     logout_user()
-    return "logged out"
+    return redirect(url_for('login'))
 
 @app.route('/chat/newAccount', methods=['GET','POST'])
 def create_new_user():
@@ -105,10 +105,10 @@ def create_new_user():
 
 
 @socketio.on('connect')
-def testCook():
+def initConnect():
     emit('connect_response',{
-    'authenticated':current_user.is_authenticated,
-    'messages':messages,
+    'authenticated': current_user.is_authenticated,
+    'selectedGroup': session.get('requested_group'),
     'username':current_user.username,
     })
 

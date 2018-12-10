@@ -6753,6 +6753,10 @@ label.panel-block {
   height: 100vh; }
   #main #main-head {
     height: 7%; }
+    #main #main-head #logout {
+      position: absolute;
+      top: .2em;
+      right: 1em; }
   #main #main-body {
     height: 93%; }
     #main #main-body #column-box {

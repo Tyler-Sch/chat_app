@@ -49,23 +49,7 @@ const init_rooms = [
 
 const init_people = [
   "potato",
-  "chip",
-  "potato",
-  "chip",
-  "potato",
-  "chip",
-  "potato",
-  "chip",
-  "potato",
-  "chip",
-  "potato",
-  "chip",
-  "potato",
-  "chip",
-  "potato",
-  "chip",
-  "potato",
-  "chip",
+  "chip"
 ]
 
 const sampleMessages = [
@@ -88,47 +72,47 @@ const sampleMessages = [
      },
      {
        "username":"potato",
-       "time":"3:47",
+       "time":"3:51",
        "message":"hello there",
      },
      {
        "username":"chipz",
-       "time":"3:48",
+       "time":"3:52",
        "message":"I see you!"
      },
       {
         "username":"potato",
-        "time":"3:50",
+        "time":"3:53",
         "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
       },
       {
         "username":"potato",
-        "time":"3:47",
+        "time":"3:54",
         "message":"hello there",
       },
       {
         "username":"chipz",
-        "time":"3:48",
+        "time":"3:56",
         "message":"I see you!"
       },
        {
          "username":"potato",
-         "time":"3:50",
+         "time":"3:57",
          "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
        },
        {
          "username":"potato",
-         "time":"3:47",
+         "time":"3:58",
          "message":"hello there",
        },
        {
          "username":"chipz",
-         "time":"3:48",
+         "time":"3:59",
          "message":"I see you!"
        },
         {
           "username":"potato",
-          "time":"3:50",
+          "time":"3:60",
           "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
         }
 
@@ -157,8 +141,6 @@ class MessageColumn extends React.Component {
     )
   }
 }
-
-
 
 class MessageBoxContainer extends React.Component {
   constructor(props) {
@@ -200,19 +182,64 @@ class LeftColumn extends React.Component {
   }
 }
 
-
-
+class Logout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleclick = this.handleclick.bind(this);
+  }
+  handleclick() {
+    window.location = "/chat/logout";
+  }
+  render() {
+    return (
+      <button
+        onClick={this.handleclick}
+        className="button is-danger is-small is-outlined"
+        id="logout">
+        logout
+      </button>
+    )
+  }
+}
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      "username":"",
+      "is_authenticated":false,
+      "selectedGroupAtLog":""
+    };
+    // this probably needs to be updated for deployment
+    this.socket = io("http://localhost");
   }
+
+  componentDidMount() {
+    this.socket.on('logOffProcessed', (data) => {
+        window.location = 'chat/login';
+    })
+
+    this.socket.on('connect_response', (data) => {
+      if (data.authenticated == false) {
+        window.location = 'chat/login';
+      } else {
+        this.setState({
+          "username": data.username,
+          "is_authenticated": true,
+          "selectedGroupAtLog": data.selectedGroup
+        });
+      }
+      console.log(this.state);
+    });
+
+  }
+
   render() {
     return (
       <div id="main">
         <div id="main-head">
-          <p className="title has-text-white has-text-centered">Messages</p>
-
+          <p className="title has-text-white level-left">Messages</p>
+          <Logout sock={this.socket} />
         </div>
         <div id="main-body" >
           <MessageBoxContainer />
