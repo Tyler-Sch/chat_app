@@ -1,9 +1,10 @@
 from flask import Flask, render_template,jsonify, request, session, redirect
 from flask import url_for
 from flask_session import Session
-from flask_socketio import SocketIO, join_room, emit
+from flask_socketio import SocketIO, join_room, emit, leave_room
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, current_user, logout_user
+
 import os
 from project.models import *
 
@@ -110,18 +111,53 @@ def initConnect():
     'authenticated': current_user.is_authenticated,
     'selectedGroup': session.get('requested_group'),
     'username':current_user.username,
+    "userId": current_user.id,
     })
 
 @socketio.on('sendMessage')
 def message_received(data):
-    messages.append(data['message'])
-    emit('gotMessage',{"newMessage":data['message']}, broadcast=True)
+    newMessage = Message(
+        message_group=Message_group.query.filter_by(group_name=data['targetRoom']).first(),
+        author = current_user,
+        message = data['message']
+    )
+    db.session.add(newMessage)
+    db.session.commit()
+    emit("newMessage", {
+        "targetRoom": data["targetRoom"],
+        "message": {
+            "author": current_user.username,
+            "time": newMessage.create_time.strftime("%I:%M.%S"),
+            "message": newMessage.message,
+        }
+    })
 
 @socketio.on("logoff")
 def logoff(data):
     session['loggedOn'] = False
     logout_user()
     emit('logOffProcessed',{"logoffSession":True})
+
+@socketio.on("requestRoomList")
+def sendRoomList(data):
+    assert current_user.username == data.username
+    # sort and return room list
+
+@socketio.on("requestMessages")
+def getMessages(data):
+    targetRoom = data['targetRoom']
+    mGroup = Message_group.query.filter_by(
+        group_name=targetRoom
+        ).first().messages[-50:]
+    emit("roomMessages", {
+        "message_group_name": targetRoom,
+        "messages":[
+            {"message_id": m.message_id,
+            "author": User.query.get(m.author).username,
+            "time": m.create_time.strftime("%I:%M.%S"),
+            "message": m.message
+            } for m in mGroup]
+    }, broadcast=True)
 
 
 @login_manager.user_loader

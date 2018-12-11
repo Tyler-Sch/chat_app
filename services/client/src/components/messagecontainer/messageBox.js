@@ -10,7 +10,7 @@ class ActiveGroupBox extends React.Component {
   render() {
     const messages = this.props.messageList.map((message) => {
       return (
-        <MessageTile key={message.username + message.time + message.message} messageInfo={message} />
+        <MessageTile key={message.message_id} messageInfo={message} />
       )
     });
 
@@ -31,7 +31,7 @@ class MessageTile extends React.Component {
     return (
       <article id="message-tile">
         <div className="columns is-mobile">
-          <p className="column is-size-5 has-text-success">{this.props.messageInfo.username}</p>
+          <p className="column is-size-5 has-text-success">{this.props.messageInfo.author}</p>
           <p className="column is-narrow is-size-7 has-text-success">{this.props.messageInfo.time}</p>
         </div>
         <p className="has-text-white-ter">{this.props.messageInfo.message}</p>
@@ -50,10 +50,16 @@ class MessageInput extends React.Component {
       <div id="message-box-input">
         <div className="field has-addons">
           <div className="control is-expanded">
-            <input className="input" type="text" placeholder="Find a repository" />
+            <input
+              className="input"
+              type="text"
+              placeholder="Enter message"
+              value={this.props.val}
+              onChange={this.props.chng}
+            />
           </div>
           <div className="control">
-            <button className="button is-info">send</button>
+            <button onClick={this.props.click} className="button is-info">send</button>
           </div>
          </div>
         </div>

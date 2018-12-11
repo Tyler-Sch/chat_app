@@ -1,8 +1,5 @@
 import React from 'react';
 
-
-
-
 class RoomList extends React.Component {
   constructor(props) {
     super(props);

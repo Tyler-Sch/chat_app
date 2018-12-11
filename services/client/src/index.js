@@ -7,6 +7,7 @@ import RoomList from './components/messagecontainer/roomlist.js';
 import PeopleList from "./components/messagecontainer/peoplelist.js";
 import ActiveGroupBox from "./components/messagecontainer/messageBox.js";
 import { MessageInput } from "./components/messagecontainer/messageBox.js";
+import Logout from "./components/logout.js"
 
 const init_rooms = [
   {
@@ -126,17 +127,59 @@ const sampleMessages = [
 class MessageColumn extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      "currentMessages":[],
+      "messageInput":""
+    };
+    this.handleChange = this.handleChange.bind(this);
+    this.sendMessage = this.sendMessage.bind(this);
   }
+  fetchMessages() {
+    console.log("fetching messages")
+    this.props.socket.emit("requestMessages", {
+      "targetRoom": this.props.activeRoom
+    });
+    console.log(this.props.activeRoom);
+  }
+  componentDidMount() {
+    console.log("component mounted")
+    this.fetchMessages();
+
+    this.props.socket.on("roomMessages", (data) => {
+      console.log(data);
+      this.setState({
+        "currentMessages": data.messages
+      });
+    })
+  }
+  handleChange(data) {
+    this.setState({
+      "messageInput": data.target.value
+    });
+  }
+
+  sendMessage() {
+    this.props.socket.emit("sendMessage", {
+      "targetRoom": this.props.activeRoom,
+      "message": this.state.messageInput
+    });
+    this.setState({
+      "messageInput": ""
+    });
+  }
+
   render() {
     return (
         <div className="column message-box is-paddingless" id="message-column">
           <div id="message-box-head">
             <p className="has-text-white-ter has-text-centered is-size-5">Message Group</p>
           </div>
-
-          <ActiveGroupBox messageList={sampleMessages[0].messages} />
-
-          <MessageInput />
+          <ActiveGroupBox messageList={this.state.currentMessages} />
+          <MessageInput
+            val={this.state.messageInput}
+            chng={this.handleChange}
+            click={this.sendMessage}
+          />
         </div>
     )
   }
@@ -146,61 +189,37 @@ class MessageBoxContainer extends React.Component {
   constructor(props) {
     super(props);
   }
+  fetchUserRooms() {
+    this.props.socket.send("requestRoomList", {
+      "username": this.props.username,
+      "currentRoomActive": this.props.activeGroup
+    })
+  }
+  componentDidMount() {
+    console.log(this.props);
+  }
   render() {
+
     return (
       <div className="columns is-mobile" id="column-box">
         <div className="column is-4" id="left-column">
-          <LeftColumn />
+        <div id="leftcolumn">
+          <RoomList rooms={init_rooms} />
+          <PeopleList people={init_people} />
+        </div>
         </div>
         <div className="column is-8" id="right-column">
-          <RightColumn />
+          <MessageColumn
+            socket={this.props.socket}
+            activeRoom={this.props.activeGroup}
+          />
         </div>
       </div>
     )
   }
 }
 
-class RightColumn extends React.Component {
-  render() {
-    return (
-      <MessageColumn />
-    )
-  }
-}
 
-class LeftColumn extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <div id="leftcolumn">
-        <RoomList rooms={init_rooms} />
-        <PeopleList people={init_people} />
-      </div>
-    )
-  }
-}
-
-class Logout extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleclick = this.handleclick.bind(this);
-  }
-  handleclick() {
-    window.location = "/chat/logout";
-  }
-  render() {
-    return (
-      <button
-        onClick={this.handleclick}
-        className="button is-danger is-small is-outlined"
-        id="logout">
-        logout
-      </button>
-    )
-  }
-}
 
 class App extends React.Component {
   constructor(props) {
@@ -208,16 +227,14 @@ class App extends React.Component {
     this.state = {
       "username":"",
       "is_authenticated":false,
-      "selectedGroupAtLog":""
+      "selectedGroupAtLog":"",
+      "userId":""
     };
     // this probably needs to be updated for deployment
     this.socket = io("http://localhost");
   }
 
   componentDidMount() {
-    this.socket.on('logOffProcessed', (data) => {
-        window.location = 'chat/login';
-    })
 
     this.socket.on('connect_response', (data) => {
       if (data.authenticated == false) {
@@ -225,6 +242,7 @@ class App extends React.Component {
       } else {
         this.setState({
           "username": data.username,
+          "userId": data.userId,
           "is_authenticated": true,
           "selectedGroupAtLog": data.selectedGroup
         });
@@ -235,14 +253,21 @@ class App extends React.Component {
   }
 
   render() {
+    if (this.state.username == ""){
+      return <div />
+    }
     return (
       <div id="main">
         <div id="main-head">
           <p className="title has-text-white level-left">Messages</p>
-          <Logout sock={this.socket} />
+          <Logout />
         </div>
         <div id="main-body" >
-          <MessageBoxContainer />
+          <MessageBoxContainer
+            socket={this.socket}
+            username={this.state.username}
+            activeGroup={this.state.selectedGroupAtLog}
+          />
         </div>
       </div>
     )
