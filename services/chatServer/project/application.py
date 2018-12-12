@@ -107,6 +107,10 @@ def create_new_user():
 
 @socketio.on('connect')
 def initConnect():
+    user_rooms = current_user.groups
+    for room in user_rooms:
+        join_room(room.group_name)
+
     emit('connect_response',{
     'authenticated': current_user.is_authenticated,
     'selectedGroup': session.get('requested_group'),
@@ -134,7 +138,7 @@ def message_received(data):
             "time": newMessage.create_time.strftime("%I:%M.%S"),
             "message": newMessage.message,
         }
-    }, broadcast=True)
+    }, broadcast=True, room=data["targetRoom"])
 
 @socketio.on("logoff")
 def logoff(data):
