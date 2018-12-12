@@ -5,8 +5,7 @@ import './mystyles.css';
 import NavBar from './components/nav.js';
 import RoomList from './components/messagecontainer/roomlist.js';
 import PeopleList from "./components/messagecontainer/peoplelist.js";
-import ActiveGroupBox from "./components/messagecontainer/messageBox.js";
-import { MessageInput } from "./components/messagecontainer/messageBox.js";
+import MessageColumn from "./components/messagecontainer/messageColumn.js";
 import Logout from "./components/logout.js"
 
 const init_rooms = [
@@ -121,82 +120,37 @@ const sampleMessages = [
   }
 ]
 
-
-
-
-class MessageColumn extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      "currentMessages":[],
-      "messageInput":""
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.sendMessage = this.sendMessage.bind(this);
-  }
-  fetchMessages() {
-    console.log("fetching messages")
-    this.props.socket.emit("requestMessages", {
-      "targetRoom": this.props.activeRoom
-    });
-    console.log(this.props.activeRoom);
-  }
-  componentDidMount() {
-    console.log("component mounted")
-    this.fetchMessages();
-
-    this.props.socket.on("roomMessages", (data) => {
-      console.log(data);
-      this.setState({
-        "currentMessages": data.messages
-      });
-    })
-  }
-  handleChange(data) {
-    this.setState({
-      "messageInput": data.target.value
-    });
-  }
-
-  sendMessage() {
-    this.props.socket.emit("sendMessage", {
-      "targetRoom": this.props.activeRoom,
-      "message": this.state.messageInput
-    });
-    this.setState({
-      "messageInput": ""
-    });
-  }
-
-  render() {
-    return (
-        <div className="column message-box is-paddingless" id="message-column">
-          <div id="message-box-head">
-            <p className="has-text-white-ter has-text-centered is-size-5">Message Group</p>
-          </div>
-          <ActiveGroupBox messageList={this.state.currentMessages} />
-          <MessageInput
-            val={this.state.messageInput}
-            chng={this.handleChange}
-            click={this.sendMessage}
-          />
-        </div>
-    )
-  }
-}
-
 class MessageBoxContainer extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      "rooms": [],
+      "currentRoomActive": this.props.activeGroup
+    };
+    // this is probably the place for the logic
+    // if they dont have a room picked
   }
   fetchUserRooms() {
-    this.props.socket.send("requestRoomList", {
+    console.log("fetching user rooms");
+    this.props.socket.emit("requestRoomList", {
       "username": this.props.username,
-      "currentRoomActive": this.props.activeGroup
-    })
+      "currentRoomActive": this.state.currentRoomActive
+    });
   }
   componentDidMount() {
-    console.log(this.props);
+
+    this.props.socket.on("newMessage", (data) => {
+      console.log("triggered in messageBoxContainer")
+    });
+
+    this.props.socket.on("roomListInit",(data) => {
+      console.log("roomList Init fired");
+      this.setState({
+        "rooms": data
+      });
+    })
+    this.fetchUserRooms();
   }
   render() {
 
@@ -204,7 +158,7 @@ class MessageBoxContainer extends React.Component {
       <div className="columns is-mobile" id="column-box">
         <div className="column is-4" id="left-column">
         <div id="leftcolumn">
-          <RoomList rooms={init_rooms} />
+          <RoomList rooms={this.state.rooms} />
           <PeopleList people={init_people} />
         </div>
         </div>

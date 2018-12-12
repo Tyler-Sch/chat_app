@@ -3,8 +3,13 @@ import React from 'react';
 class RoomList extends React.Component {
   constructor(props) {
     super(props);
+
+  }
+  componentDidMount() {
+    console.log(this.props);
   }
   render() {
+
     const inner = this.props.rooms.map((i) => {
       return <RoomTile key={i} roomInfo={i} />
     });
@@ -30,9 +35,9 @@ class RoomTile extends React.Component {
     return (
       <div className="RoomTile">
         {this.props.roomInfo.has_checked == true ? (
-          <p className="has-text-grey-light is-size-5 has-text-left">{this.props.roomInfo.room}</p>
+          <p className="has-text-grey-light is-size-5 has-text-left">{this.props.roomInfo.groupName}</p>
         ):(
-          <p className="has-text-danger is-size-5">{this.props.roomInfo.room}</p>
+          <p className="has-text-danger is-size-5">{this.props.roomInfo.groupName}</p>
         )}
      </div>
     )

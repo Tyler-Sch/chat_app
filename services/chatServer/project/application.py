@@ -116,12 +116,16 @@ def initConnect():
 
 @socketio.on('sendMessage')
 def message_received(data):
+    targetRoom = Message_group.query.filter_by(group_name=data['targetRoom']).first()
     newMessage = Message(
-        message_group=Message_group.query.filter_by(group_name=data['targetRoom']).first(),
+        message_group=targetRoom,
         author = current_user,
         message = data['message']
     )
+
     db.session.add(newMessage)
+    db.session.commit()
+    targetRoom.time_most_recent_post = newMessage.create_time
     db.session.commit()
     emit("newMessage", {
         "targetRoom": data["targetRoom"],
@@ -130,7 +134,7 @@ def message_received(data):
             "time": newMessage.create_time.strftime("%I:%M.%S"),
             "message": newMessage.message,
         }
-    })
+    }, broadcast=True)
 
 @socketio.on("logoff")
 def logoff(data):
@@ -140,8 +144,17 @@ def logoff(data):
 
 @socketio.on("requestRoomList")
 def sendRoomList(data):
-    assert current_user.username == data.username
     # sort and return room list
+    room_list = [{
+        "groupName":g.group_name,
+        "last_message_time": (g.time_most_recent_post if g.time_most_recent_post else g.date_created).strftime("%I:%M.%S"),
+        "has_checked": True,
+    } for g in current_user.groups]
+    # To prevent this horribly long line of code just modify
+    # Message_group init to default time_most_recent_post to date_created
+    room_list.sort(key=lambda x: x['last_message_time'])
+    emit("roomListInit", room_list)
+
 
 @socketio.on("requestMessages")
 def getMessages(data):
