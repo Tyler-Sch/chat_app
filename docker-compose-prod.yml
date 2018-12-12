@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+
+    chatserver:
+        build:
+            context: ./services/chatServer
+            dockerfile: Dockerfile-dev
+        security_opt:
+            - seccomp:unconfined
+        expose:
+            - '5000'
+        environment:
+            - FLASK_APP=project/application.py
+            - FLASK_ENV=production
+            - APP_SETTINGS=project.config.ProductionConfig
+            - DATABASE_URL=postgres://postgres:postgres@chat-db:5432/chat_prod
+            - DATABASE_TEST_URL=postgres://postgres:postgres@chat-db:5432/chat_test
+        depends_on:
+            - chat-db
+
+    chat-db:
+        build:
+            context: ./services/chatServer/project/db
+            dockerfile: Dockerfile
+        security_opt:
+            - seccomp:unconfined
+        ports:
+            - 5435:5432
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+
+    client:
+        build:
+          context: ./services/client
+          dockerfile: Dockerfile-prod
+        ports:
+          - '3000:80'
+        depends_on:
+          - chatserver
+
+    nginx:
+        build:
+            context: ./services/nginx
+            dockerfile: Dockerfile-prod
+        restart: always
+        ports:
+            - 80:80
+        depends_on:
+            - chatserver
+            - client
