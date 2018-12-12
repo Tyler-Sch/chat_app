@@ -8,116 +8,9 @@ import PeopleList from "./components/messagecontainer/peoplelist.js";
 import MessageColumn from "./components/messagecontainer/messageColumn.js";
 import Logout from "./components/logout.js"
 
-const init_rooms = [
-  {
-    "room":"bunnies",
-    "has_checked":false,
-  },
-  {
-    "room":"chessClub",
-    "has_checked":true
-  },
-  {
-    "room":"testRoom",
-    "has_checked":false
-    },
-    {
-      "room":"bunnies",
-      "has_checked":false,
-    },
-    {
-      "room":"chessClub",
-      "has_checked":true
-    },
-    {
-      "room":"testRoom",
-      "has_checked":false
-    },
-    {
-      "room":"bunnies",
-      "has_checked":false,
-    },
-    {
-      "room":"chessClub",
-      "has_checked":true
-    },
-    {
-      "room":"testRoom",
-      "has_checked":false
-    }
-];
-
 const init_people = [
   "potato",
   "chip"
-]
-
-const sampleMessages = [
-  {"message_group_name":"bunnies",
-   "messages": [
-    {
-      "username":"potato",
-      "time":"3:47",
-      "message":"hello there",
-    },
-    {
-      "username":"chipz",
-      "time":"3:48",
-      "message":"I see you!"
-    },
-     {
-       "username":"potato",
-       "time":"3:50",
-       "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
-     },
-     {
-       "username":"potato",
-       "time":"3:51",
-       "message":"hello there",
-     },
-     {
-       "username":"chipz",
-       "time":"3:52",
-       "message":"I see you!"
-     },
-      {
-        "username":"potato",
-        "time":"3:53",
-        "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
-      },
-      {
-        "username":"potato",
-        "time":"3:54",
-        "message":"hello there",
-      },
-      {
-        "username":"chipz",
-        "time":"3:56",
-        "message":"I see you!"
-      },
-       {
-         "username":"potato",
-         "time":"3:57",
-         "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
-       },
-       {
-         "username":"potato",
-         "time":"3:58",
-         "message":"hello there",
-       },
-       {
-         "username":"chipz",
-         "time":"3:59",
-         "message":"I see you!"
-       },
-        {
-          "username":"potato",
-          "time":"3:60",
-          "message":"I see you too! Checking for a lot of text a lot of text so much text what can you do? do you wrap or just increase the width of the whole page?"
-        }
-
-   ]
-  }
 ]
 
 class MessageBoxContainer extends React.Component {
@@ -220,7 +113,7 @@ class App extends React.Component {
       "userId":""
     };
     // this probably needs to be updated for deployment
-    this.socket = io("http://localhost");
+    this.socket = io("http://54.91.79.41");
   }
 
   componentDidMount() {
