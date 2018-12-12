@@ -6,6 +6,15 @@ class ActiveGroupBox extends React.Component {
   constructor(props) {
     super(props);
   }
+  scrollToBottom() {
+    this.messagesEnd.scrollIntoView();
+  }
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+  componentDidUpdate() {
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  }
 
   render() {
     const messages = this.props.messageList.map((message) => {
@@ -17,7 +26,9 @@ class ActiveGroupBox extends React.Component {
     return (
       <div className="message-box is-paddingless is-marginless">
         {messages}
+        <div ref={(el) => { this.messagesEnd = el; }}></div>
       </div>
+
     )
   }
 }
@@ -56,6 +67,7 @@ class MessageInput extends React.Component {
               placeholder="Enter message"
               value={this.props.val}
               onChange={this.props.chng}
+              onKeyDown={this.props.waitForEnter}
             />
           </div>
           <div className="control">

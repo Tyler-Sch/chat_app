@@ -128,6 +128,7 @@ class MessageBoxContainer extends React.Component {
       "rooms": [],
       "currentRoomActive": this.props.activeGroup
     };
+    this.handleActiveGroupChange = this.handleActiveGroupChange.bind(this);
     // this is probably the place for the logic
     // if they dont have a room picked
   }
@@ -139,9 +140,17 @@ class MessageBoxContainer extends React.Component {
     });
   }
   componentDidMount() {
-
     this.props.socket.on("newMessage", (data) => {
-      console.log("triggered in messageBoxContainer")
+      // this function handles sorting roomlist and activating
+      // has_seen parameter which changes color of text when use has
+      // a new message
+      if (data.targetRoom != this.state.currentRoomActive) {
+        const roomsTemp = this.sortRoomList(data.targetRoom, 1, false)
+
+        this.setState({
+          "rooms": roomsTemp
+        });
+      }
     });
 
     this.props.socket.on("roomListInit",(data) => {
@@ -152,20 +161,46 @@ class MessageBoxContainer extends React.Component {
     })
     this.fetchUserRooms();
   }
+  handleActiveGroupChange(e) {
+    const newSelectedGroup = e.target.getAttribute("name");
+    const roomsTemp = this.sortRoomList(newSelectedGroup, 0, true)
+    this.setState({
+      "currentRoomActive": newSelectedGroup,
+      "rooms": roomsTemp
+    });
+  }
+  sortRoomList(name, newPosition, checked) {
+    const indexOfRoom = this.state.rooms.findIndex(i => i.groupName == name);
+    const roomsTemp = this.state.rooms.slice(0,this.state.rooms.length);
+    const selectedRoom = roomsTemp.splice(indexOfRoom, 1)[0];
+    if (checked == false) {
+      selectedRoom.has_checked = false;
+    }
+    else {
+      selectedRoom.has_checked = true;
+    }
+    roomsTemp.splice(newPosition, 0, selectedRoom);
+    return roomsTemp;
+
+  }
+
   render() {
 
     return (
       <div className="columns is-mobile" id="column-box">
         <div className="column is-4" id="left-column">
         <div id="leftcolumn">
-          <RoomList rooms={this.state.rooms} />
+          <RoomList
+            rooms={this.state.rooms}
+            handleRoomChange={this.handleActiveGroupChange}
+           />
           <PeopleList people={init_people} />
         </div>
         </div>
         <div className="column is-8" id="right-column">
           <MessageColumn
             socket={this.props.socket}
-            activeRoom={this.props.activeGroup}
+            activeRoom={this.state.currentRoomActive}
           />
         </div>
       </div>

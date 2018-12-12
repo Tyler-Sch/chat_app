@@ -12,6 +12,7 @@ class MessageColumn extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
+    this.waitForEnter = this.waitForEnter.bind(this);
   }
   fetchMessages() {
     console.log("fetching messages")
@@ -39,6 +40,11 @@ class MessageColumn extends React.Component {
       }
     });
   }
+  componentDidUpdate(prevProps) {
+    if (this.props.activeRoom !== prevProps.activeRoom) {
+      this.fetchMessages();
+    }
+  }
   handleChange(data) {
     this.setState({
       "messageInput": data.target.value
@@ -54,18 +60,24 @@ class MessageColumn extends React.Component {
       "messageInput": ""
     });
   }
+  waitForEnter(e) {
+    if (e.keyCode == 13) {
+      this.sendMessage();
+    }
+  }
 
   render() {
     return (
         <div className="column message-box is-paddingless" id="message-column">
           <div id="message-box-head">
-            <p className="has-text-white-ter has-text-centered is-size-5">Message Group</p>
+            <p className="has-text-white-ter has-text-centered is-size-5">{this.props.activeRoom}</p>
           </div>
           <ActiveGroupBox messageList={this.state.currentMessages} />
           <MessageInput
             val={this.state.messageInput}
             chng={this.handleChange}
             click={this.sendMessage}
+            waitForEnter={this.waitForEnter}
           />
         </div>
     )

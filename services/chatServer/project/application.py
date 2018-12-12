@@ -170,7 +170,7 @@ def getMessages(data):
             "time": m.create_time.strftime("%I:%M.%S"),
             "message": m.message
             } for m in mGroup]
-    }, broadcast=True)
+    })
 
 
 @login_manager.user_loader

@@ -8,10 +8,15 @@ class RoomList extends React.Component {
   componentDidMount() {
     console.log(this.props);
   }
+
   render() {
 
     const inner = this.props.rooms.map((i) => {
-      return <RoomTile key={i} roomInfo={i} />
+      return <RoomTile
+                key={i}
+                roomInfo={i}
+                handleRoomChange={this.props.handleRoomChange}
+              />
     });
     return (
       <div className="" id="roomlist">
@@ -35,9 +40,18 @@ class RoomTile extends React.Component {
     return (
       <div className="RoomTile">
         {this.props.roomInfo.has_checked == true ? (
-          <p className="has-text-grey-light is-size-5 has-text-left">{this.props.roomInfo.groupName}</p>
+          <p
+            className="has-text-grey-light is-size-5 has-text-left"
+            name={this.props.roomInfo.groupName}
+            onClick={this.props.handleRoomChange} >
+            {this.props.roomInfo.groupName}
+          </p>
         ):(
-          <p className="has-text-danger is-size-5">{this.props.roomInfo.groupName}</p>
+          <p className="has-text-danger is-size-5"
+            name={this.props.roomInfo.groupName}
+            onClick={this.props.handleRoomChange} >
+            {this.props.roomInfo.groupName}
+          </p>
         )}
      </div>
     )
