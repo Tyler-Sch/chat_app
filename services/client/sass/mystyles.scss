@@ -105,12 +105,12 @@ $pre-background: $background;
 
   #main-head {
     height:7%;
+    z-index:10;
 
      #logout {
        position: absolute;
        top: .2em;
        right: 1em;
-       
      }
   }
 
@@ -135,6 +135,9 @@ $pre-background: $background;
 
               &:hover, &:focus {
                 overflow-y: scroll
+              }
+              .RoomTile {
+                cursor: pointer;
               }
             }
 
