@@ -25,13 +25,7 @@ class MessageBoxContainer extends React.Component {
     // this is probably the place for the logic
     // if they dont have a room picked
   }
-  fetchUserRooms() {
-    console.log("fetching user rooms");
-    this.props.socket.emit("requestRoomList", {
-      "username": this.props.username,
-      "currentRoomActive": this.state.currentRoomActive
-    });
-  }
+
   componentDidMount() {
     this.props.socket.on("newMessage", (data) => {
       // this function handles sorting roomlist and activating
@@ -39,7 +33,6 @@ class MessageBoxContainer extends React.Component {
       // a new message
       if (data.targetRoom != this.state.currentRoomActive) {
         const roomsTemp = this.sortRoomList(data.targetRoom, 1, false)
-
         this.setState({
           "rooms": roomsTemp
         });
@@ -47,24 +40,31 @@ class MessageBoxContainer extends React.Component {
     });
 
     this.props.socket.on("roomListInit",(data) => {
-      console.log("roomList Init fired");
+      const rooms = data;
+      if (this.props.activeGroup == "") {
+        const initSelectedRoomName = this.props.activeGroup;
+        const rooms = this.sortRoomList(data, initSelectedRoomName, 0, true);
+        console.log("triggered");
+      }
+
+
       this.setState({
-        "rooms": data
+        "rooms": rooms
       });
     })
     this.fetchUserRooms();
   }
   handleActiveGroupChange(e) {
     const newSelectedGroup = e.target.getAttribute("name");
-    const roomsTemp = this.sortRoomList(newSelectedGroup, 0, true)
+    const roomsTemp = this.sortRoomList(this.state.rooms,newSelectedGroup, 0, true)
     this.setState({
       "currentRoomActive": newSelectedGroup,
       "rooms": roomsTemp
     });
   }
-  sortRoomList(name, newPosition, checked) {
-    const indexOfRoom = this.state.rooms.findIndex(i => i.groupName == name);
-    const roomsTemp = this.state.rooms.slice(0,this.state.rooms.length);
+  sortRoomList(roomList, name, newPosition, checked) {
+    const indexOfRoom = roomList.findIndex(i => i.groupName == name);
+    const roomsTemp = roomList.slice(0,roomList.length);
     const selectedRoom = roomsTemp.splice(indexOfRoom, 1)[0];
     if (checked == false) {
       selectedRoom.has_checked = false;
@@ -75,6 +75,12 @@ class MessageBoxContainer extends React.Component {
     roomsTemp.splice(newPosition, 0, selectedRoom);
     return roomsTemp;
 
+  }
+  fetchUserRooms() {
+    this.props.socket.emit("requestRoomList", {
+      "username": this.props.username,
+      "currentRoomActive": this.state.currentRoomActive
+    });
   }
 
   render() {
@@ -113,7 +119,7 @@ class App extends React.Component {
       "userId":""
     };
     // this probably needs to be updated for deployment
-    this.socket = io("http://54.91.79.41");
+    this.socket = io("http://localhost");
   }
 
   componentDidMount() {
@@ -129,7 +135,6 @@ class App extends React.Component {
           "selectedGroupAtLog": data.selectedGroup
         });
       }
-      console.log(this.state);
     });
 
   }

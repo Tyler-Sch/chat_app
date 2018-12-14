@@ -5,8 +5,6 @@ from flask_socketio import SocketIO, join_room, emit, leave_room
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, current_user, logout_user
 
-
-
 import os
 from project.models import *
 
@@ -85,6 +83,7 @@ def login():
 @app.route('/chat/logout', methods=["GET"])
 def logout():
     session["loggedOn"] = False
+    session["requested_group"] = None
     logout_user()
     return redirect(url_for('login'))
 
@@ -119,6 +118,7 @@ def initConnect():
     'username':current_user.username,
     "userId": current_user.id,
     })
+    session["requested_group"] = None
 
 @socketio.on('sendMessage')
 def message_received(data):
@@ -158,7 +158,7 @@ def sendRoomList(data):
     } for g in current_user.groups]
     # To prevent this horribly long line of code just modify
     # Message_group init to default time_most_recent_post to date_created
-    room_list.sort(key=lambda x: x['last_message_time'])
+    room_list.sort(key=lambda x: x['last_message_time'], reverse=True)
     emit("roomListInit", room_list)
 
 

@@ -13,7 +13,7 @@ class ActiveGroupBox extends React.Component {
     this.scrollToBottom();
   }
   componentDidUpdate() {
-    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    this.messagesEnd.scrollIntoView();
   }
 
   render() {
@@ -40,12 +40,15 @@ class MessageTile extends React.Component {
 
   render() {
     return (
-      <article id="message-tile">
-        <div className="columns is-mobile">
+      <article className="message-tile">
+        <div
+          className="columns is-mobile message-tile-head"
+          style={{ paddingBottom: 0, marginBottom: "-.8em" }}
+        >
           <p className="column is-size-5 has-text-success">{this.props.messageInfo.author}</p>
           <p className="column is-narrow is-size-7 has-text-success">{this.props.messageInfo.time}</p>
         </div>
-        <p className="has-text-white-ter">{this.props.messageInfo.message}</p>
+        <p className="has-text-white-ter message-text">{this.props.messageInfo.message}</p>
       </article>
 
     )

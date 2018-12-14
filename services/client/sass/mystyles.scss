@@ -180,8 +180,12 @@ $pre-background: $background;
             overflow-y: scroll;
             height: 90%;
 
-            #message-tile {
+            .message-tile {
               padding-right: 1em;
+
+            }
+            .message-text {
+              text-indent: 0em;
             }
           }
         }
@@ -189,4 +193,9 @@ $pre-background: $background;
     }
   }
 
+}
+.message-tile-head {
+
+  margin-top: 1em;
+  // border-top: 1px solid $grey;
 }

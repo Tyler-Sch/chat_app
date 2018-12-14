@@ -6797,5 +6797,10 @@ label.panel-block {
           #main #main-body #column-box #right-column #message-column .message-box {
             overflow-y: scroll;
             height: 90%; }
-            #main #main-body #column-box #right-column #message-column .message-box #message-tile {
+            #main #main-body #column-box #right-column #message-column .message-box .message-tile {
               padding-right: 1em; }
+            #main #main-body #column-box #right-column #message-column .message-box .message-text {
+              text-indent: 0em; }
+
+.message-tile-head {
+  margin-top: 1em; }
