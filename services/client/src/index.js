@@ -31,7 +31,7 @@ class MessageBoxContainer extends React.Component {
       // has_seen parameter which changes color of text when use has
       // a new message
       if (data.targetRoom != this.state.currentRoomActive) {
-        const roomsTemp = this.sortRoomList(data.targetRoom, 1, false)
+        const roomsTemp = this.sortRoomList(this.state.rooms,data.targetRoom, 1, false)
         this.setState({
           "rooms": roomsTemp
         });

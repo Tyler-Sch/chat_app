@@ -55,6 +55,21 @@ class Message(db.Model):
         self.author = author.id
         self.message = message
 
+class Previous_user_check(db.Model):
+    __tablename__ = "previous_user_check"
+    user = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    group_name = db.Column(
+        db.Integer,
+        db.ForeignKey("message_groups.group_id"),
+        primary_key=True
+    )
+    last_checked = db.Column(db.DateTime)
+
+    def __init__(self, user, group_name):
+        self.user = user.id
+        self.group_name = group_name.id
+
+
 user_group = db.Table(
     "user_group_table",
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
