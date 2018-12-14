@@ -37,6 +37,8 @@ def join_group(groupName):
                 return redirect(request.host_url, code=302)
             else:
                 active_group.members.append(current_user)
+                # new_time_entry = Previous_user_check(current_user, active_group)
+                # new_time_entry
                 db.session.commit()
                 return redirect(request.host_url, code=302)
         else:

@@ -56,6 +56,8 @@ class Message(db.Model):
         self.message = message
 
 class Previous_user_check(db.Model):
+    # currently has no tests
+    # also, this is poorly named
     __tablename__ = "previous_user_check"
     user = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     group_name = db.Column(
@@ -65,9 +67,9 @@ class Previous_user_check(db.Model):
     )
     last_checked = db.Column(db.DateTime)
 
-    def __init__(self, user, group_name):
+    def __init__(self, user, group):
         self.user = user.id
-        self.group_name = group_name.id
+        self.group_name = group.group_id
 
 
 user_group = db.Table(
