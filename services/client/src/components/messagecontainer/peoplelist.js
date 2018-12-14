@@ -17,10 +17,12 @@ class PeopleList extends React.Component {
   }
   componentDidMount() {
     this.props.socket.on("newPeopleList", data => {
-      console.log("newPeopleList fired")
-      this.setState({
-        "people": data.people
-      });
+      if (data.room == this.props.activeRoom) {
+        console.log("newPeopleList fired")
+        this.setState({
+          "people": data.people
+        });
+      }
     });
     this.fetchPeople(this.props.activeRoom);
   }

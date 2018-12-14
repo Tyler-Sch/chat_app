@@ -166,7 +166,10 @@ def sendPeopleList(data):
     target_room = data['targetRoom']
     message_group = Message_group.query.filter_by(group_name=target_room).first()
     people_list = [i.username for i in message_group.members]
-    emit('newPeopleList', {"people": people_list})
+    emit('newPeopleList', {
+            "people": people_list,
+            "room": data['targetRoom']
+        }, broadcast=True, room=target_room)
 
 @socketio.on("requestMessages")
 def getMessages(data):
