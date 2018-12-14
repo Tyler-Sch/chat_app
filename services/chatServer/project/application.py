@@ -51,8 +51,6 @@ def join_group(groupName):
     else:
         return redirect(url_for('login'), code=302)
 
-
-
 @app.route('/chat/login',methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
@@ -142,28 +140,38 @@ def message_received(data):
         }
     }, broadcast=True, room=data["targetRoom"])
 
-@socketio.on("logoff")
-def logoff(data):
-    session['loggedOn'] = False
-    logout_user()
-    emit('logOffProcessed',{"logoffSession":True})
+# @socketio.on("logoff")
+# def logoff(data):
+#     session['loggedOn'] = False
+#     logout_user()
+#     emit('logOffProcessed',{"logoffSession":True})
 
 @socketio.on("requestRoomList")
 def sendRoomList(data):
     # sort and return room list
     room_list = [{
         "groupName":g.group_name,
-        "last_message_time": (g.time_most_recent_post if g.time_most_recent_post else g.date_created).strftime("%I:%M.%S"),
+        "last_message_time": g.time_most_recent_post,
         "has_checked": True,
     } for g in current_user.groups]
-    # To prevent this horribly long line of code just modify
-    # Message_group init to default time_most_recent_post to date_created
+
     room_list.sort(key=lambda x: x['last_message_time'], reverse=True)
+    for room in room_list:
+        room['last_message_time'] = room['last_message_time'].strftime("%I:%M.%S")
+
     emit("roomListInit", room_list)
 
+@socketio.on("getPeopleList")
+def sendPeopleList(data):
+    target_room = data['targetRoom']
+    message_group = Message_group.query.filter_by(group_name=target_room).first()
+    people_list = [i.username for i in message_group.members]
+    emit('newPeopleList', {"people": people_list})
 
 @socketio.on("requestMessages")
 def getMessages(data):
+    # should extend the message time.
+    # or at least extend it if it's older than a day
     targetRoom = data['targetRoom']
     mGroup = Message_group.query.filter_by(
         group_name=targetRoom

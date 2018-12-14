@@ -3,9 +3,38 @@ import React from 'react';
 class PeopleList extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      "people":[]
+    };
   }
+  fetchPeople(roomName) {
+    this.props.socket.emit("getPeopleList", {
+      "targetRoom": roomName
+    });
+    console.log("attempting to fetch people");
+    console.log(this.props.activeRoom);
+  }
+  componentDidMount() {
+    this.props.socket.on("newPeopleList", data => {
+      console.log("newPeopleList fired")
+      this.setState({
+        "people": data.people
+      });
+    });
+    this.fetchPeople(this.props.activeRoom);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.activeRoom !== prevProps.activeRoom) {
+      this.fetchPeople(this.props.activeRoom);
+    }
+  }
+
+
+
   render() {
-    const peopleList = this.props.people.map((person) => {
+    const peopleList = this.state.people.map((person) => {
       return (<Person key={person} personName={person} />)
         });
     return (

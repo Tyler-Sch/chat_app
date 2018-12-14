@@ -16,7 +16,6 @@ const init_people = [
 class MessageBoxContainer extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       "rooms": [],
       "currentRoomActive": this.props.activeGroup
@@ -40,20 +39,24 @@ class MessageBoxContainer extends React.Component {
     });
 
     this.props.socket.on("roomListInit",(data) => {
-      const rooms = data;
-      if (this.props.activeGroup == "") {
+      let rooms;
+      if (this.props.activeGroup != null) {
         const initSelectedRoomName = this.props.activeGroup;
-        const rooms = this.sortRoomList(data, initSelectedRoomName, 0, true);
+        rooms = this.sortRoomList(data, initSelectedRoomName, 0, true);
         console.log("triggered");
       }
-
-
+      else {
+        rooms = data;
+      }
       this.setState({
-        "rooms": rooms
+        "rooms": rooms,
+        "currentRoomActive": rooms[0].groupName
       });
     })
+
     this.fetchUserRooms();
   }
+
   handleActiveGroupChange(e) {
     const newSelectedGroup = e.target.getAttribute("name");
     const roomsTemp = this.sortRoomList(this.state.rooms,newSelectedGroup, 0, true)
@@ -61,7 +64,9 @@ class MessageBoxContainer extends React.Component {
       "currentRoomActive": newSelectedGroup,
       "rooms": roomsTemp
     });
+
   }
+
   sortRoomList(roomList, name, newPosition, checked) {
     const indexOfRoom = roomList.findIndex(i => i.groupName == name);
     const roomsTemp = roomList.slice(0,roomList.length);
@@ -93,7 +98,10 @@ class MessageBoxContainer extends React.Component {
             rooms={this.state.rooms}
             handleRoomChange={this.handleActiveGroupChange}
            />
-          <PeopleList people={init_people} />
+          <PeopleList
+            socket={this.props.socket}
+            activeRoom={this.state.currentRoomActive}
+          />
         </div>
         </div>
         <div className="column is-8" id="right-column">
@@ -134,6 +142,7 @@ class App extends React.Component {
           "is_authenticated": true,
           "selectedGroupAtLog": data.selectedGroup
         });
+        console.log(this.state);
       }
     });
 

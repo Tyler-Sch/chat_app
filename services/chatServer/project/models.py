@@ -31,7 +31,7 @@ class Message_group(db.Model):
     group_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     group_name = db.Column(db.String, unique=True)
     date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    time_most_recent_post = db.Column(db.DateTime)
+    time_most_recent_post = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     creator = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     members = db.relationship("User", secondary="user_group_table")

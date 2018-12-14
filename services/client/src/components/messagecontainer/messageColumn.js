@@ -52,13 +52,15 @@ class MessageColumn extends React.Component {
   }
 
   sendMessage() {
-    this.props.socket.emit("sendMessage", {
-      "targetRoom": this.props.activeRoom,
-      "message": this.state.messageInput
-    });
-    this.setState({
-      "messageInput": ""
-    });
+    if (this.state.messageInput != "") {
+      this.props.socket.emit("sendMessage", {
+        "targetRoom": this.props.activeRoom,
+        "message": this.state.messageInput
+      });
+      this.setState({
+        "messageInput": ""
+      });
+    }
   }
   waitForEnter(e) {
     if (e.keyCode == 13) {
