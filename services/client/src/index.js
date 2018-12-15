@@ -137,7 +137,7 @@ class App extends React.Component {
       "userId":""
     };
     // this probably needs to be updated for deployment
-    this.socket = io("http://localhost");
+    this.socket = io("http://54.91.79.41");
   }
 
   componentDidMount() {
