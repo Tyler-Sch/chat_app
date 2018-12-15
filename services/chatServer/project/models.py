@@ -55,7 +55,7 @@ class Message(db.Model):
         self.author = author.id
         self.message = message
 
-class Previous_user_check(db.Model):
+class Room_last_checked(db.Model):
     # currently has no tests
     # also, this is poorly named
     __tablename__ = "previous_user_check"
@@ -70,6 +70,8 @@ class Previous_user_check(db.Model):
     def __init__(self, user, group):
         self.user = user.id
         self.group_name = group.group_id
+
+
 
 
 user_group = db.Table(

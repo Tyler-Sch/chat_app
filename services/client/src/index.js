@@ -14,6 +14,7 @@ const init_people = [
 ]
 
 class MessageBoxContainer extends React.Component {
+  // should move the room list logic out of here and to roomList.js probably.
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +32,11 @@ class MessageBoxContainer extends React.Component {
       // has_seen parameter which changes color of text when use has
       // a new message
       if (data.targetRoom != this.state.currentRoomActive) {
-        const roomsTemp = this.sortRoomList(this.state.rooms,data.targetRoom, 1, false)
+        const roomsTemp = this.sortRoomList(
+          this.state.rooms,data.targetRoom,
+           1,
+           false
+        );
         this.setState({
           "rooms": roomsTemp
         });
@@ -48,6 +53,7 @@ class MessageBoxContainer extends React.Component {
       else {
         rooms = data;
       }
+      rooms[0].has_checked = true;
       this.setState({
         "rooms": rooms,
         "currentRoomActive": rooms[0].groupName

@@ -7,6 +7,7 @@ from flask_login import LoginManager, login_user, current_user, logout_user
 
 import os
 from project.models import *
+import datetime
 
 
 app = Flask(__name__)
@@ -37,8 +38,9 @@ def join_group(groupName):
                 return redirect(request.host_url, code=302)
             else:
                 active_group.members.append(current_user)
-                # new_time_entry = Previous_user_check(current_user, active_group)
-                # new_time_entry
+                new_time_entry = Room_last_checked(current_user, active_group)
+                new_time_entry.last_checked = datetime.datetime.utcnow()
+                db.session.add(new_time_entry)
                 db.session.commit()
                 return redirect(request.host_url, code=302)
         else:
@@ -48,6 +50,10 @@ def join_group(groupName):
                 creator=current_user
             )
             db.session.add(new_group)
+            db.session.commit()
+            new_time_entry = Room_last_checked(current_user, new_group)
+            new_time_entry.last_checked = datetime.datetime.utcnow()
+            db.session.add(new_time_entry)
             db.session.commit()
             return redirect(request.host_url, code=302)
     else:
@@ -151,10 +157,18 @@ def message_received(data):
 @socketio.on("requestRoomList")
 def sendRoomList(data):
     # sort and return room list
+    times_last_checked = Room_last_checked.query.filter_by(
+        user=current_user.id
+    ).all()
+    time_dict = {
+        time.group_name:time.last_checked for time in times_last_checked
+    }
+
     room_list = [{
         "groupName":g.group_name,
         "last_message_time": g.time_most_recent_post,
-        "has_checked": True,
+        "has_checked": True if time_dict[g.group_id] > g.time_most_recent_post else False,
+
     } for g in current_user.groups]
 
     room_list.sort(key=lambda x: x['last_message_time'], reverse=True)
@@ -180,7 +194,7 @@ def getMessages(data):
     targetRoom = data['targetRoom']
     mGroup = Message_group.query.filter_by(
         group_name=targetRoom
-        ).first().messages[-50:]
+        ).first()
     emit("roomMessages", {
         "message_group_name": targetRoom,
         "messages":[
@@ -188,8 +202,14 @@ def getMessages(data):
             "author": User.query.get(m.author).username,
             "time": m.create_time.strftime("%I:%M.%S"),
             "message": m.message
-            } for m in mGroup]
+            } for m in mGroup.messages[-50:]]
     })
+
+    last_checked = Room_last_checked.query.get(
+                        (current_user.id, mGroup.group_id)
+                    )
+    last_checked.last_checked = datetime.datetime.utcnow()
+    db.session.commit()
 
 
 @login_manager.user_loader
