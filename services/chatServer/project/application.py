@@ -211,6 +211,14 @@ def getMessages(data):
     last_checked.last_checked = datetime.datetime.utcnow()
     db.session.commit()
 
+@socketio.on("markRoomViewed")
+def markRoom(data):
+    mGroup = Message_group.query.filter_by(group_name=data["targetRoom"]).first()
+    last_checked = Room_last_checked.query.get(
+                        (current_user.id, mGroup.group_id)
+                    )
+    last_checked.last_checked = datetime.datetime.utcnow()
+    db.session.commit()
 
 @login_manager.user_loader
 def load_user(user_id):

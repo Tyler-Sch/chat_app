@@ -64,6 +64,10 @@ class MessageBoxContainer extends React.Component {
   }
 
   handleActiveGroupChange(e) {
+    // mark new time checked
+    this.props.socket.emit("markRoomViewed",{
+      "targetRoom": this.state.currentRoomActive
+    });
     const newSelectedGroup = e.target.getAttribute("name");
     const roomsTemp = this.sortRoomList(this.state.rooms,newSelectedGroup, 0, true)
     this.setState({
